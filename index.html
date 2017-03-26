@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Neighborhood map</title>
+    <link rel="stylesheet" href="css/style.less" type="text/less">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+<body>
+    <div id="map"></div>
+
+    <div id="panel">
+        <!--<input id="show-listings" type="button" value="Show Listings">
+        <input id="hide-listings" type="button" value="Hide Listings">-->
+        
+        <input placeholder="Search:" type="search" data-bind="value: query, valueUpdate: 'keyup'"> 
+        <ul data-bind="template: {name: 'marker', foreach: markers}"> </ul>
+    </div>
+    
+    <script type="text/html" id="marker">
+        <li>
+            <a href="javascript:void(0)" data-bind="click: $parent.focusMap"><h1 data-bind="text: title"></h1></a>
+        </li>
+    </script>
+    
+    <!-- scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-debug.js" integrity="sha256-H9N9blVxqgLNhjZznl2m0R/VEIqFIT8CFHyLFGVRuns=" crossorigin="anonymous"></script>
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script>
+    <script src="js/map.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyBvVpcXW3TbIWZjMoSrQMPeSlSXMIb6Yz8&libraries=places&callback=initMap"></script>
+</body>
+</html>
