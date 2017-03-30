@@ -21,7 +21,16 @@ function initMap() {
         center: defaultLoc
     });
 
-    addPlaces(defaultLoc, bindKnockout);
+    addPlaces(defaultLoc);
+    
+    // this works better than trying to load it all up in callbacks 
+    (function wait() {
+        if ( markers.length > 0 ) {
+            bindKnockout();
+        } else {
+            setTimeout( wait, 100 );
+        }
+    })();
     
     /*
     TABLED until https
@@ -63,7 +72,7 @@ function initMap() {
 // TODO: correlate with http://developer.tmsapi.com/docs/data_v1_1/movies/Movie_showtimes API for showtimes
 
 // hey look, callback hell.
-function addPlaces(position, bind)    {
+function addPlaces(position)    {
     infowindow = new google.maps.InfoWindow();
     var service = new google.maps.places.PlacesService(map);
     
@@ -79,7 +88,6 @@ function addPlaces(position, bind)    {
                 createMarker(results[i]);
             }
             // initiate knockout binding
-            bind();
         }else   {
             alert('Error: Could not load data from the Google Maps API');
         }
