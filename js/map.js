@@ -15,7 +15,17 @@ function initMap() {
         lat: 35.880,
         lng: -79.066
     }
+
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: zoom,
+        center: defaultLoc
+    });
+
+    addPlaces(defaultLoc, bindKnockout);
     
+    /*
+    TABLED until https
+
     var geoSuccess = function(position) {
         console.log('successful geolocation');
         var coords = {lat: position.coords.latitude, lng: position.coords.longitude};
@@ -28,14 +38,17 @@ function initMap() {
         addPlaces(coords, bindKnockout);
     }
     
-    var geoFail = function()   {
+    var geoFail = function(position)   {
         console.log('geolocation failed');
+        var coords = {lat: position.coords.latitude, lng: position.coords.longitude};
         
         //build default map
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: zoom,
             center: {lat: defaultLoc.lat, lng: defaultLoc.lng}
-        }); 
+        });
+        
+        addPlaces(coords, bindKnockout);
     }
     
     //feature detection
@@ -44,7 +57,7 @@ function initMap() {
     }else   {
         //fallback
         geoFail();
-    }   
+    }*/
 }
 
 // TODO: correlate with http://developer.tmsapi.com/docs/data_v1_1/movies/Movie_showtimes API for showtimes
