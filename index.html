@@ -5,21 +5,31 @@
     <title>Neighborhood map</title>
     <link rel="stylesheet" href="css/style.less" type="text/less">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <!-- moved this to the top to accelerate CSS compiling -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script>
 </head>
 <body>
     <div id="map"></div>
 
     <div id="panel">
-        <!--<input id="show-listings" type="button" value="Show Listings">
-        <input id="hide-listings" type="button" value="Hide Listings">-->
-        
-        <input placeholder="Search:" type="search" data-bind="value: query, valueUpdate: 'keyup'"> 
+        <input placeholder="Filter:" type="search" data-bind="value: query, valueUpdate: 'keyup'"> 
         <ul data-bind="template: {name: 'marker', foreach: markers}"> </ul>
     </div>
     
+    <div id="NYT">
+        <h2>Movies currently showing in theaters:</h2>
+        <ul data-bind="template: {name: 'review', foreach: reviews}"></ul>
+    </div>
+    
+    <script type="text/html" id="review">
+        <li>
+            <a data-bind="attr: { 'href': link.url }" target="_blank"><span data-bind="text: display_title"></span></a>
+        </li>
+    </script>
+    
     <script type="text/html" id="marker">
         <li>
-            <a href="javascript:void(0)" data-bind="click: $parent.focusMap"><h1 data-bind="text: title"></h1></a>
+            <a href="javascript:void(0)" data-bind="click: $parent.focusMap"><span data-bind="text: title"></span></a>
         </li>
     </script>
     
@@ -27,8 +37,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-debug.js" integrity="sha256-H9N9blVxqgLNhjZznl2m0R/VEIqFIT8CFHyLFGVRuns=" crossorigin="anonymous"></script>
     
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    
-    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script>
 
     <script src="js/map.js"></script>
     
