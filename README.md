@@ -1,1 +1,17 @@
-# frontend-nanodegree-neighborhood-map
+# Chapel Hill Movie Map
+
+> Developed for the __Udacity Front-end Web Developer Nanodegree__
+
+## APIs Used:
+
+Google Maps API  
+Google Places API  
+New York Times Movie Reviews API
+
+## How to use:
+
+Live preview is available at <https://rmatteso.github.io/frontend-nanodegree-neighborhood-map/>
+
+Click on any of the places on the left sidebar to pan the map to its location and see more information.
+
+Click on any of the titles in the right sidebar to see a New York Times review of that movie
