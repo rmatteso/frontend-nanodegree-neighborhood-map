@@ -54,8 +54,7 @@ function initMap() {
 
 // TODO: correlate with http://developer.tmsapi.com/docs/data_v1_1/movies/Movie_showtimes API for showtimes
 
-
-
+// hey look, callback hell.
 function addPlaces(position)    {
     infowindow = new google.maps.InfoWindow();
     var service = new google.maps.places.PlacesService(map);
@@ -74,42 +73,35 @@ function addPlaces(position)    {
         }
     };
     
-    function getDetails(placeId)    {
-        var service = new google.maps.places.PlacesService(map);
-
-        service.getDetails({
-            placeId: placeId
-        }, function(results, status){
-            console.log(results);
-        });
-    };
-    
     function createMarker(place) {
-        var placeLoc = place.geometry.location;
-        var marker = new google.maps.Marker({
-            title: place.name,
-            map: map,
-            position: place.geometry.location,
-            animation: google.maps.Animation.DROP,
-            index: markers.length, // hopefully this will help with the show/hide
-        });
+        var service = new google.maps.places.PlacesService(map);
         
-        console.log(place);
-        var details = getDetails(place.place_id);
-
-        marker.addListener('click', function() {
-            // add additional stuff here
-            infowindow.setContent(
-                '<strong>'+place.name+'</strong><br />'+
-                //'<span>'+place.place_id+'</span>'
-                '<span>'+details.formatted_address+'</span><br />'+
-                '<span>'+details.formatted_phone_number+'</span>'
-            );
+        service.getDetails({
+            placeId: place.place_id
+        }, function(results, status){
+            var marker = new google.maps.Marker({
+                title: place.name,
+                map: map,
+                position: place.geometry.location,
+                animation: google.maps.Animation.DROP,
+                index: markers.length, // hopefully this will help with the show/hide
+            });
             
-            infowindow.open(map, this);
-        });
+            marker.addListener('click', function() {
+                // add additional stuff here
+                infowindow.setContent(
+                    '<strong>'+place.name+'</strong><br />'+
+                    //'<span>'+place.place_id+'</span>'
+                    '<span>'+results.formatted_address+'</span><br />'+
+                    '<span>'+results.formatted_phone_number+'</span>'
+                );
 
-        markers.push(marker);
+                infowindow.open(map, this);
+                console.log('what?');
+            });
+
+            markers.push(marker);
+        });
     }
 }
 
