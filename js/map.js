@@ -67,7 +67,7 @@ function initMap() {
         //fallback
         geoFail();
     }*/
-}
+};
 
 // TODO: correlate with http://developer.tmsapi.com/docs/data_v1_1/movies/Movie_showtimes API for showtimes
 
@@ -131,7 +131,7 @@ function addPlaces(position)    {
         });
     }
     
-}
+};
 
 function loadReviews(callback)  {
     var url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json";
@@ -147,7 +147,7 @@ function loadReviews(callback)  {
     }).fail(function(err) {
         alert('Error: Could not load data from the New York Times API');
     });
-}
+};
 
 function bindKnockout() {
     function viewModel() {
@@ -184,5 +184,36 @@ function bindKnockout() {
     }
     
     loadReviews(callback);
+};
+
+function load4square(callback)  {
+    var cID = 'WZKW3MYVINNZ1GTUSAUTNCM5CL3LRTHYQ2FQOFOYUQKVOA02';
+    var cSec = 'VNPODPWJ4YA0ICU4J3JMP3SSZCBRVQ4OZ4ARXMM52ONFUSR5';
+    var baseURL = 'https://api.foursquare.com/v2/venues/search?';
+    var version = '20170321';
+    
+    var parameters = 'll=40.7,-74';
+    
+    var call = baseURL 
+        + '&' + parameters 
+        + '&client_id=' + cID
+        + '&client_secret=' + cSec
+        + '&v=' + version;
+    
+    $.get(call)
+        .done(function(results)    {
+            console.log(results);
+        })
+        .fail(function(err)  {
+            console.log('foursquare API call failed');
+            console.log(err);
+        });
 }
 
+// 4square API
+//
+// client ID: WZKW3MYVINNZ1GTUSAUTNCM5CL3LRTHYQ2FQOFOYUQKVOA02
+//
+// client Secret: VNPODPWJ4YA0ICU4J3JMP3SSZCBRVQ4OZ4ARXMM52ONFUSR5
+//
+// example venues search: https://api.foursquare.com/v2/venues/search?ll=40.7,-74&client_id=WZKW3MYVINNZ1GTUSAUTNCM5CL3LRTHYQ2FQOFOYUQKVOA02&client_secret=VNPODPWJ4YA0ICU4J3JMP3SSZCBRVQ4OZ4ARXMM52ONFUSR5&v=20170321
