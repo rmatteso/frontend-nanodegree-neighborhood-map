@@ -8,13 +8,14 @@ var infowindow;
 var markers = [];
 var reviews = [];
 
+var defaultLoc =    {
+    // Chapel Hill, NC
+    lat: 35.88,
+    lng: -79.066
+}
+
 function initMap() {
     var zoom = 13;
-    var defaultLoc =    {
-        // Chapel Hill, NC
-        lat: 35.880,
-        lng: -79.066
-    }
 
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: zoom,
@@ -23,7 +24,6 @@ function initMap() {
 
     addPlaces(defaultLoc);
     
-    // this works better than trying to load it all up in callbacks 
     (function wait() {
         if ( markers.length > 0 ) {
             bindKnockout();
@@ -31,45 +31,7 @@ function initMap() {
             setTimeout( wait, 100 );
         }
     })();
-    
-    /*
-    TABLED until https
-
-    var geoSuccess = function(position) {
-        console.log('successful geolocation');
-        var coords = {lat: position.coords.latitude, lng: position.coords.longitude};
-        
-        map = new google.maps.Map(document.getElementById('map'), {
-            zoom: zoom,
-            center: coords
-        });
-        
-        addPlaces(coords, bindKnockout);
-    }
-    
-    var geoFail = function(position)   {
-        console.log('geolocation failed');
-        var coords = {lat: position.coords.latitude, lng: position.coords.longitude};
-        
-        //build default map
-        map = new google.maps.Map(document.getElementById('map'), {
-            zoom: zoom,
-            center: {lat: defaultLoc.lat, lng: defaultLoc.lng}
-        });
-        
-        addPlaces(coords, bindKnockout);
-    }
-    
-    //feature detection
-    if(navigator.geolocation)    {
-        navigator.geolocation.getCurrentPosition(geoSuccess, geoFail);
-    }else   {
-        //fallback
-        geoFail();
-    }*/
 };
-
-// TODO: correlate with http://developer.tmsapi.com/docs/data_v1_1/movies/Movie_showtimes API for showtimes
 
 // hey look, callback hell.
 function addPlaces(position)    {
@@ -85,7 +47,7 @@ function addPlaces(position)    {
     function callback(results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             for (var i = 0; i < results.length; i++) {
-                createMarker(results[i]);
+                createMarker(results[i]); 
             }
             // initiate knockout binding
         }else   {
@@ -99,6 +61,7 @@ function addPlaces(position)    {
         service.getDetails({
             placeId: place.place_id
         }, function(results, status){
+            var details = results;
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 var marker = new google.maps.Marker({
                     title: place.name,
@@ -107,22 +70,26 @@ function addPlaces(position)    {
                     animation: google.maps.Animation.DROP,
                     index: markers.length
                 });
-
-                marker.addListener('click', function() {
-                    // add additional stuff here
-                    infowindow.setContent(
-                        '<strong>'+place.name+'</strong><br />'+
-                        '<p class="address">'+results.formatted_address+'</p>'+
-                        '<p>'+results.formatted_phone_number+'</p>'+
-                        '<p><a target="_blank" href="'+results.url+'">View this location in Google Maps &#129141;</a></p>'
-                    );
-                    infowindow.open(map, this);
-                    // marker bounces once when it's clicked
-                    marker.setAnimation(google.maps.Animation.BOUNCE);
-                    setTimeout(function(){ 
-                        marker.setAnimation(null); 
-                    }, 750);
-                });
+                
+                getFoursquare(place.name, function(results)   {
+                    console.log('foursquare callback results');
+                    console.log(results);
+                    marker.addListener('click', function() {
+                        // add additional stuff here
+                        infowindow.setContent(
+                            '<strong>'+place.name+'</strong><br />'+
+                            '<p class="address">'+details.formatted_address+'</p>'+
+                            '<p>'+details.formatted_phone_number+'</p>'+
+                            '<p><a target="_blank" href="'+details.url+'">View this location in Google Maps &#129141;</a></p>'
+                        );
+                        infowindow.open(map, this);
+                        // marker bounces once when it's clicked
+                        marker.setAnimation(google.maps.Animation.BOUNCE);
+                        setTimeout(function(){ 
+                            marker.setAnimation(null); 
+                        }, 700);
+                    });
+                });  
 
                 markers.push(marker);
             }else   {
@@ -133,6 +100,7 @@ function addPlaces(position)    {
     
 };
 
+/*
 function loadReviews(callback)  {
     var url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json";
     url += '?' + $.param({
@@ -147,7 +115,7 @@ function loadReviews(callback)  {
     }).fail(function(err) {
         alert('Error: Could not load data from the New York Times API');
     });
-};
+};*/
 
 function bindKnockout() {
     function viewModel() {
@@ -176,23 +144,26 @@ function bindKnockout() {
             });
         }, viewModel);
         
-        self.reviews = ko.observableArray(reviews);
+        //self.reviews = ko.observableArray(reviews);
     }
     
     function callback() {
         ko.applyBindings(new viewModel());
     }
     
-    loadReviews(callback);
+    //loadReviews(callback);
+    callback();
 };
 
-function load4square(callback)  {
+function getFoursquare(query, callback)  {
     var cID = 'WZKW3MYVINNZ1GTUSAUTNCM5CL3LRTHYQ2FQOFOYUQKVOA02';
     var cSec = 'VNPODPWJ4YA0ICU4J3JMP3SSZCBRVQ4OZ4ARXMM52ONFUSR5';
     var baseURL = 'https://api.foursquare.com/v2/venues/search?';
     var version = '20170321';
     
-    var parameters = 'll=40.7,-74';
+    //var parameters = 'll=40.7,-74';
+    var query = query;
+    var parameters = 'query=' + query + '&ll=' + defaultLoc.lat.toFixed(2) + ',' + defaultLoc.lng.toFixed(2);
     
     var call = baseURL 
         + '&' + parameters 
@@ -202,18 +173,12 @@ function load4square(callback)  {
     
     $.get(call)
         .done(function(results)    {
-            console.log(results);
+            if(results.response.venues.length > 0)      {
+                callback(results.response.venues[0]);
+            }
         })
         .fail(function(err)  {
             console.log('foursquare API call failed');
             console.log(err);
         });
-}
-
-// 4square API
-//
-// client ID: WZKW3MYVINNZ1GTUSAUTNCM5CL3LRTHYQ2FQOFOYUQKVOA02
-//
-// client Secret: VNPODPWJ4YA0ICU4J3JMP3SSZCBRVQ4OZ4ARXMM52ONFUSR5
-//
-// example venues search: https://api.foursquare.com/v2/venues/search?ll=40.7,-74&client_id=WZKW3MYVINNZ1GTUSAUTNCM5CL3LRTHYQ2FQOFOYUQKVOA02&client_secret=VNPODPWJ4YA0ICU4J3JMP3SSZCBRVQ4OZ4ARXMM52ONFUSR5&v=20170321
+};
