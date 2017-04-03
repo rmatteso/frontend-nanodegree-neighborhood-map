@@ -109,26 +109,32 @@ var app = (function() {
 
                         var content = [];
 
-                        content.push('<strong>' + place.name + '</strong><br />');
+                        content.push('<p><strong><a title="View this location in Google Maps" target="_blank" href="' + details.url + '">' + place.name + ' &#129141;</a></strong></p>');
                         content.push('<p class="address">' + details.formatted_address + '</p>');
                         content.push('<p>' + details.formatted_phone_number + '</p>');
-
+                        
+                        // basically if we have the right response from 4sq
                         if (samePlace(place.name, results.name)) {
+                            content.push('<h2>Foursquare API information</h2>');
+                            
+                            console.log(results);
+                            
+                            content.push('<p><a target="_blank" href="https://foursquare.com/venue/'+results.id+'"?ref=WZKW3MYVINNZ1GTUSAUTNCM5CL3LRTHYQ2FQOFOYUQKVOA02">Foursquare Venue Page</a></p>')
+                            
                             // check for undefined
                             if (results.url) {
-                                content.push('<p><a target="_blank" href="' + results.url + '">' + place.name + '</a></p>');
+                                content.push('<p>Website: <a target="_blank" href="' + results.url + '">' + place.name + '</a></p>');
+                            }else   {
+                                content.push('<p>no website provided</p>');
                             }
 
                             // here's where more foursquare information would go
 
 
-
+                            content.push('<p><img id="four_logo" src="img/foursquare-300.png" alt="powered by foursquare"></p>');
                         } else {
                             content.push('<p>We couldn\'t retrieve any Foursquare information for this location</p>');
                         }
-
-                        // pop out to google maps
-                        content.push('<p><a target="_blank" href="' + details.url + '">View this location in Google Maps &#129141;</a></p>');
 
                         content = content.join('');
 
@@ -200,12 +206,14 @@ var app = (function() {
                 }
             })
             .fail(function(err) {
+                alert('We were unable to retrieve any information from the Foursquare API');
                 console.log('foursquare API call failed');
                 console.log(err);
             });
     };
 
     return {
-        "initMap": initMap
+        "initMap": initMap,
+        "apiError": apiError
     }
 })();

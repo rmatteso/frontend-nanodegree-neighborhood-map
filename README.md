@@ -25,4 +25,8 @@ Click on any of the titles in the right sidebar to see a New York Times review o
 
 ## Installation:
 
-Download the files and run on any apache server.  Replace the API keys for Google Maps API And Foursquare API with your own keys.
+Download the files and run on any apache server such as npm http-server: <https://www.npmjs.com/package/http-server>.  
+
+Replace the API keys for Google Maps API And Foursquare API in maps.js with your own keys.  
+
+Open index.html from a browser to run the application, ex: "localhost/frontend-nanodegree-neighborhood-map/index.html"
