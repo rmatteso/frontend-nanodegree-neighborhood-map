@@ -10,8 +10,8 @@ Foursquare API
 
 ## Libraries
 
-Caolan async library: <https://github.com/caolan/async>
-Glench fuzzyset.js: <https://github.com/Glench/fuzzyset.js>
+Caolan async library: <https://github.com/caolan/async>  
+Glench fuzzyset.js: <https://github.com/Glench/fuzzyset.js>  
 
 jQuery, LESS.js, knockout
 
