@@ -11,12 +11,12 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js"></script>
 </head>
 <body>
-    <div id="map"></div>
+    <main id="map"></main>
 
-    <div id="panel">
+    <nav id="panel">
         <input placeholder="Filter:" type="search" data-bind="value: query, valueUpdate: 'keyup'"> 
         <ul data-bind="template: {name: 'marker', foreach: markers}"> </ul>
-    </div>
+    </nav>
     
     <script type="text/html" id="marker">
         <li>

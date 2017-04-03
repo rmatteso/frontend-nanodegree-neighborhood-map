@@ -15,3 +15,7 @@ Live preview is available at <https://rmatteso.github.io/frontend-nanodegree-nei
 Click on any of the places on the left sidebar to pan the map to its location and see more information.
 
 Click on any of the titles in the right sidebar to see a New York Times review of that movie
+
+## Installation:
+
+Download the files and run on any apache server.  Replace the API keys for Google Maps API And Foursquare API with your own keys.
