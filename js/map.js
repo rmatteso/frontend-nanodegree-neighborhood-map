@@ -6,7 +6,6 @@
 var map;
 var infowindow;
 var markers = [];
-var reviews = [];
 
 var defaultLoc =    {
     // Chapel Hill, NC
@@ -22,19 +21,11 @@ function initMap() {
         center: defaultLoc
     });
 
-    addPlaces(defaultLoc);
-    
-    (function wait() {
-        if ( markers.length > 0 ) {
-            bindKnockout();
-        } else {
-            setTimeout( wait, 100 );
-        }
-    })();
+    addPlaces(defaultLoc, bindKnockout);
 };
 
 // hey look, callback hell.
-function addPlaces(position)    {
+function addPlaces(position, bind)    {
     infowindow = new google.maps.InfoWindow();
     var service = new google.maps.places.PlacesService(map);
     
@@ -46,16 +37,23 @@ function addPlaces(position)    {
     
     function callback(results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-            for (var i = 0; i < results.length; i++) {
-                createMarker(results[i]); 
-            }
-            // initiate knockout binding
+            // this is required to make sure that the knockout items aren't bound until all the asynchronous requests have completed
+            async.eachOf(results, function(value, key, callback)  {
+                createMarker(value, callback);
+            }, function(err)   {
+                if(err) {
+                    console.log('Something broke.');
+                    console.log(err);
+                }
+                bindKnockout();
+            });
+ 
         }else   {
             alert('Error: Could not load data from the Google Maps API');
-        }
+        };
     };
     
-    function createMarker(place) {
+    function createMarker(place, callback) {
         var service = new google.maps.places.PlacesService(map);
         
         service.getDetails({
@@ -70,18 +68,43 @@ function addPlaces(position)    {
                     animation: google.maps.Animation.DROP,
                     index: markers.length
                 });
+                markers.push(marker);
                 
                 getFoursquare(place.name, function(results)   {
-                    console.log('foursquare callback results');
-                    console.log(results);
-                    marker.addListener('click', function() {
-                        // add additional stuff here
-                        infowindow.setContent(
-                            '<strong>'+place.name+'</strong><br />'+
+                    //console.log(results);
+                    
+                    // could actually strip out details seach.. 4square has a formatted address too.
+                    
+                    // let's do some stuff with the foursquare results.
+                    // it has social info like twitter and FB 
+                    // if 4square name == place name.. else say we couldn't find a good match.
+                    
+                    var content = '<strong>'+place.name+'</strong><br />';
+                    
+                    if(results.name == place.name)  {
+                        var url = '';
+                            if(results.url)  {
+                                url = results.url;
+                            }else   {
+                                url = 'no Foursquare info available';
+                            }
+
+                        content +=
                             '<p class="address">'+details.formatted_address+'</p>'+
                             '<p>'+details.formatted_phone_number+'</p>'+
-                            '<p><a target="_blank" href="'+details.url+'">View this location in Google Maps &#129141;</a></p>'
-                        );
+                            '<p><a target="_blank" href="'+url+'">'+place.name+'</a></p>'+
+                            '<p><a target="_blank" href="'+details.url+'">View this location in Google Maps &#129141;</a></p>';
+                        
+                        
+                    }else   {
+                        content += 'We couldn\'t retrieve any information for this location';
+                        console.log('results name: ' + results.name);
+                        console.log('place name: ' + place.name);
+                    }
+    
+                    marker.addListener('click', function() {
+                        // add additional stuff here
+                        infowindow.setContent(content);
                         infowindow.open(map, this);
                         // marker bounces once when it's clicked
                         marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -89,33 +112,15 @@ function addPlaces(position)    {
                             marker.setAnimation(null); 
                         }, 700);
                     });
-                });  
-
-                markers.push(marker);
+                    // this tells the async call to that we've created the marker
+                    callback();
+                });
             }else   {
                 alert('Error: Could not load data from the Google Places API');
-            }
+            };  
         });
-    }
-    
+    };  
 };
-
-/*
-function loadReviews(callback)  {
-    var url = "https://api.nytimes.com/svc/movies/v2/reviews/search.json";
-    url += '?' + $.param({
-      'api-key': "f0ba834b7431421e8971e70bda9a08bc"
-    });
-    $.ajax({
-        url: url,
-        method: 'GET',
-    }).done(function(result) {
-        reviews = result.results;
-        callback();
-    }).fail(function(err) {
-        alert('Error: Could not load data from the New York Times API');
-    });
-};*/
 
 function bindKnockout() {
     function viewModel() {
@@ -129,12 +134,6 @@ function bindKnockout() {
             google.maps.event.trigger(marker, 'click');
         }
         
-        //  TODO: Expand on this
-        //  show more details about the review/star rating in a modal
-        /*self.showReview = function(review)  {
-            console.log(review.display_title);
-        }*/
-        
         self.markers = ko.dependentObservable(function() {
             var search = self.query().toLowerCase();
             return ko.utils.arrayFilter(markers, function(marker) {
@@ -143,16 +142,9 @@ function bindKnockout() {
                 return bool;
             });
         }, viewModel);
-        
-        //self.reviews = ko.observableArray(reviews);
     }
     
-    function callback() {
-        ko.applyBindings(new viewModel());
-    }
-    
-    //loadReviews(callback);
-    callback();
+    ko.applyBindings(new viewModel());
 };
 
 function getFoursquare(query, callback)  {
