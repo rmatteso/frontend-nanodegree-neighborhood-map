@@ -6,7 +6,14 @@
 
 Google Maps API  
 Google Places API  
-New York Times Movie Reviews API
+Foursquare API
+
+## Libraries
+
+Caolan async library: <https://github.com/caolan/async>
+Glench fuzzyset.js: <https://github.com/Glench/fuzzyset.js>
+
+jQuery, LESS.js, knockout
 
 ## How to use:
 
