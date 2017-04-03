@@ -29,9 +29,10 @@
     
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
+    <script src="js/fuzzyset.js"></script>
     <script src="js/async.min.js"></script>
     <script src="js/map.js"></script>
     
-    <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyBvVpcXW3TbIWZjMoSrQMPeSlSXMIb6Yz8&libraries=places&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyBvVpcXW3TbIWZjMoSrQMPeSlSXMIb6Yz8&libraries=places&callback=app.initMap" onerror="apiError()"></script>
 </body>
 </html>
